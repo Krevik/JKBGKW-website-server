@@ -1,0 +1,31 @@
+.navigation-menu {
+	display: flex;
+	justify-content: center;
+}
+
+.p-tabmenu-nav {
+	list-style-type: none;
+	flex-wrap: nowrap;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem {
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.p-tabmenu {
+	-webkit-text-stroke: 0.1px black;
+	font-family: "Future Rot";
+	font-size: 1rem;
+	font-weight: 600;
+	display: flex;
+	justify-content: center;
+}
+
+.steam-login-button .p-button {
+	background: transparent;
+	border: none;
+}
