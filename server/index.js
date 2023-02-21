@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const pino = require("express-pino-logger")();
+const pino = require("express-pino-logger");
 
 const app = express();
 
@@ -15,23 +15,16 @@ app.get("/api/greeting", (req, res) => {
 });
 
 app.get("/api/serverInfo", (req, res) => {
-	const data = new FormData();
-	data.append("client_id", "26606");
-	data.append("pin", "635577095f13a5c85545c4e6690d8878");
-	data.append("server_id", "24044");
+	res.setHeader("Content-Type", "application/json");
+	res.setHeader("Access-Control-Allow-Origin", "*");
 	fetch(
-		"https://rec.liveserver.pl/api?channel=get_server_info&return_method=json",
+		"https://rec.liveserver.pl/api?channel=get_server_info&return_method=json&client_id=26606&pin=635577095f13a5c85545c4e6690d8878&server_id=24044",
 		{
-			method: "POST",
-			headers: {
-				"Content-Type": "multipart/form-data",
-			},
-
-			body: data.toString(),
+			method: "post",
 		}
 	).then((response) => {
 		console.log("response" + JSON.stringify(response));
-		res.send(response.json());
+		res.send(response);
 	});
 });
 
