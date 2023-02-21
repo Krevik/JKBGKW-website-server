@@ -10,6 +10,7 @@ app.use(pino);
 app.get("/api/greeting", (req, res) => {
 	const name = req.query.name || "World";
 	res.setHeader("Content-Type", "application/json");
+	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
