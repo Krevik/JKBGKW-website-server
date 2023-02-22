@@ -19,9 +19,8 @@ app.get("/api/greeting", (req, res) => {
 	res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
-app.options("/api/serverInfo", cors());
-app.post("/api/serverInfo", cors(), async (req, res) => {
-	res.setHeader("Content-Type", "application/json");
+app.options("/api/serverInfo");
+app.post("/api/serverInfo", async (req, res) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	// @ts-ignore
 	await fetch(
@@ -39,9 +38,8 @@ app.post("/api/serverInfo", cors(), async (req, res) => {
 		}
 	)
 		.then(async (response) => {
-			console.log(response.text);
-			const apiResponseJson = await response.json();
-			res.send(apiResponseJson);
+			const responseJSONED = await response.json();
+			res.send(responseJSONED);
 		})
 		.catch((error) => {
 			res.send("Couldn't fetch");
@@ -60,8 +58,8 @@ app.post("/api/steamUserData", async (req, res) => {
 		method: "get",
 	})
 		.then(async (response) => {
-			const apiResponseJson = await response.json();
-			res.send(apiResponseJson);
+			const responseJSONED = await response.json();
+			res.send(responseJSONED);
 		})
 		.catch((error) => {
 			res.send("Couldn't fetch");
