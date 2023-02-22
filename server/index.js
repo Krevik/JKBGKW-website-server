@@ -37,11 +37,15 @@ app.post("/api/serverInfo", cors(), async (req, res) => {
 				server_id: "24044",
 			}),
 		}
-	).then(async (response) => {
-		console.log(response.text);
-		const apiResponseJson = await response.json();
-		res.send(apiResponseJson);
-	});
+	)
+		.then(async (response) => {
+			console.log(response.text);
+			const apiResponseJson = await response.json();
+			res.send(apiResponseJson);
+		})
+		.catch((error) => {
+			res.send("Couldn't fetch");
+		});
 });
 
 app.options("/api/steamUserData", (req, res) => {
@@ -60,7 +64,7 @@ app.post("/api/steamUserData", async (req, res) => {
 			res.send(apiResponseJson);
 		})
 		.catch((error) => {
-			console.log("Got error while fetching :( " + error);
+			res.send("Couldn't fetch");
 		});
 });
 
