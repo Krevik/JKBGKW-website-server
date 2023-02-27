@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(cors());
 
-var corsOptions = {
+const corsOptions = {
 	origin: "http://kether.pl",
 	optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -20,6 +20,23 @@ var corsOptions = {
 const setDefaultCorsHeaders = (res) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+};
+
+const fetchWrapHandleErrors = (request, options, res) => {
+	// @ts-ignore
+	fetch(request, options)
+		.catch((error) => {
+			console.log(
+				`Failed fetching: ${JSON.stringify(
+					request
+				)} with options ${JSON.stringify(options)}`
+			);
+			console.log(`Error: ${JSON.stringify(error)}`);
+		})
+		.then(async (response) => {
+			const jsonedResponse = await response.json();
+			res.send(jsonedResponse);
+		});
 };
 
 app.get("/api/greeting", (req, res) => {
@@ -36,8 +53,7 @@ app.options("/api/serverInfo", cors(corsOptions), (req, res) => {
 app.post("/api/serverInfo", cors(corsOptions), async (req, res) => {
 	setDefaultCorsHeaders(res);
 
-	// @ts-ignore
-	await fetch(
+	fetchWrapHandleErrors(
 		"https://rec.liveserver.pl/api?channel=get_server_info&return_method=json",
 		{
 			method: "post",
@@ -49,15 +65,9 @@ app.post("/api/serverInfo", cors(corsOptions), async (req, res) => {
 				pin: "635577095f13a5c85545c4e6690d8878",
 				server_id: "24044",
 			}),
-		}
-	)
-		.then(async (response) => {
-			const responseJSONED = await response.json();
-			res.send(responseJSONED);
-		})
-		.catch((error) => {
-			res.send("Couldn't fetch");
-		});
+		},
+		res
+	);
 });
 
 app.options("/api/steamUserData", cors(corsOptions), (req, res) => {
@@ -70,17 +80,14 @@ app.post("/api/steamUserData", cors(corsOptions), async (req, res) => {
 	setDefaultCorsHeaders(res);
 
 	const fetchURL = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F9B6127DDEB6AF27EA0D64F1E5C642A4&steamids=${req.body.userID}`;
-	// @ts-ignore
-	await fetch(fetchURL, {
-		method: "get",
-	})
-		.then(async (response) => {
-			const responseJSONED = await response.json();
-			res.send(responseJSONED);
-		})
-		.catch((error) => {
-			res.send("Couldn't fetch");
-		});
+
+	fetchWrapHandleErrors(
+		fetchURL,
+		{
+			method: "get",
+		},
+		res
+	);
 });
 
 app.listen(3001, () => console.log("Server listening at port 3001"));
