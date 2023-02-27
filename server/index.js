@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const pino = require("express-pino-logger")();
 const fetch = require("node-fetch");
 const cors = require("cors");
-const https = require("https");
+const http = require("http");
 const fs = require("fs");
 const { URLSearchParams } = require("url");
 
@@ -12,16 +12,27 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(cors());
 
+var corsOptions = {
+	origin: "http://kether.pl",
+	optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
 app.get("/api/greeting", (req, res) => {
 	const name = req.query.name || "World";
 	res.setHeader("Content-Type", "application/json");
 	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
 	res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
-app.options("/api/serverInfo");
-app.post("/api/serverInfo", async (req, res) => {
+app.options("/api/serverInfo", cors(corsOptions), (req, res) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+});
+app.post("/api/serverInfo", cors(corsOptions), async (req, res) => {
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+
 	// @ts-ignore
 	await fetch(
 		"https://rec.liveserver.pl/api?channel=get_server_info&return_method=json",
@@ -46,12 +57,18 @@ app.post("/api/serverInfo", async (req, res) => {
 		});
 });
 
-app.options("/api/steamUserData", (req, res) => {
+app.options("/api/steamUserData", cors(corsOptions), (req, res) => {
 	res.setHeader("Content-Type", "application/json");
+	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+
+	res.setHeader("Access-Control-Allow-Origin", "*");
 });
 
-app.post("/api/steamUserData", async (req, res) => {
+app.post("/api/steamUserData", cors(corsOptions), async (req, res) => {
 	res.setHeader("Content-Type", "application/json");
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+
 	const fetchURL = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F9B6127DDEB6AF27EA0D64F1E5C642A4&steamids=${req.body.userID}`;
 	// @ts-ignore
 	await fetch(fetchURL, {
@@ -66,19 +83,22 @@ app.post("/api/steamUserData", async (req, res) => {
 		});
 });
 
-https
-	.createServer(
-		// Provide the private and public key to the server by reading each
-		// file's content with the readFileSync() method.
-		{
-			key: fs.readFileSync("key.pem"),
-			cert: fs.readFileSync("cert.pem"),
-		},
-		app
-	)
-	.listen(3001, () => {
-		console.log("serever is runing at port 3001");
-	});
+app.listen(3001,() => console.log("Server listening at port 3001"));
+
+
+//http
+//	.createServer(
+//		// Provide the private and public key to the server by reading each
+//		// file's content with the readFileSync() method.
+//		{
+//			key: fs.readFileSync("key.pem"),
+//			cert: fs.readFileSync("cert.pem"),
+//		},
+//		app
+//	)
+//	.listen("3001", () => {
+//		console.log("serever is runing at port 3001");
+//	});
 
 // app.listen(3001, () =>
 // 	console.log("Express server is running on localhost:3001")
