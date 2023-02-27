@@ -17,21 +17,24 @@ var corsOptions = {
 	optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
+const setDefaultCorsHeaders = (res) => {
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+};
+
 app.get("/api/greeting", (req, res) => {
 	const name = req.query.name || "World";
 	res.setHeader("Content-Type", "application/json");
-	res.setHeader("Access-Control-Allow-Origin", "*");
-	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+	setDefaultCorsHeaders(res);
 	res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
 app.options("/api/serverInfo", cors(corsOptions), (req, res) => {
-	res.setHeader("Access-Control-Allow-Origin", "*");
-	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+	setDefaultCorsHeaders(res);
 });
+
 app.post("/api/serverInfo", cors(corsOptions), async (req, res) => {
-	res.setHeader("Access-Control-Allow-Origin", "*");
-	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+	setDefaultCorsHeaders(res);
 
 	// @ts-ignore
 	await fetch(
@@ -59,15 +62,12 @@ app.post("/api/serverInfo", cors(corsOptions), async (req, res) => {
 
 app.options("/api/steamUserData", cors(corsOptions), (req, res) => {
 	res.setHeader("Content-Type", "application/json");
-	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
-
-	res.setHeader("Access-Control-Allow-Origin", "*");
+	setDefaultCorsHeaders(res);
 });
 
 app.post("/api/steamUserData", cors(corsOptions), async (req, res) => {
 	res.setHeader("Content-Type", "application/json");
-	res.setHeader("Access-Control-Allow-Origin", "*");
-	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+	setDefaultCorsHeaders(res);
 
 	const fetchURL = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F9B6127DDEB6AF27EA0D64F1E5C642A4&steamids=${req.body.userID}`;
 	// @ts-ignore
@@ -83,23 +83,4 @@ app.post("/api/steamUserData", cors(corsOptions), async (req, res) => {
 		});
 });
 
-app.listen(3001,() => console.log("Server listening at port 3001"));
-
-
-//http
-//	.createServer(
-//		// Provide the private and public key to the server by reading each
-//		// file's content with the readFileSync() method.
-//		{
-//			key: fs.readFileSync("key.pem"),
-//			cert: fs.readFileSync("cert.pem"),
-//		},
-//		app
-//	)
-//	.listen("3001", () => {
-//		console.log("serever is runing at port 3001");
-//	});
-
-// app.listen(3001, () =>
-// 	console.log("Express server is running on localhost:3001")
-// );
+app.listen(3001, () => console.log("Server listening at port 3001"));
