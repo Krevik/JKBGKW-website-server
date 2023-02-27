@@ -11,16 +11,20 @@ const addBind = async (db, bindToAdd) => {
 		if (!bindToAdd.text) {
 			return reject("No text was given");
 		}
-		db.run(
-			`INSERT INTO ${BINDS_DATABASE_REF} (author, text) VALUES (?, ?)`,
-			[bindToAdd.author, bindToAdd.text],
-			function (err, rows) {
-				if (err) {
-					return reject(err);
+		try {
+			db.run(
+				`INSERT INTO ${BINDS_DATABASE_REF} (author, text) VALUES (?, ?)`,
+				[bindToAdd.author, bindToAdd.text],
+				function (err, rows) {
+					if (err) {
+						return reject(err);
+					}
+					resolve(rows);
 				}
-				resolve(rows);
-			}
-		);
+			);
+		} catch (error) {
+			return reject(error);
+		}
 	});
 };
 

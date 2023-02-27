@@ -11,14 +11,14 @@ function createDbConnection() {
 			if (error) {
 				return console.error(error.message);
 			}
-			createTable(db);
+			createBindsTable(db);
 		});
 		console.log("Connection with SQLite has been established");
 		return db;
 	}
 }
 
-function createTable(db) {
+function createBindsTable(db) {
 	db.exec(`
   CREATE TABLE ${databaseUtils.BINDS_DATABASE_REF}
   (
