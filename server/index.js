@@ -12,6 +12,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(cors());
 
+const SERVER_PORT = 3001;
+
 const corsOptions = {
 	origin: "http://kether.pl",
 	optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -90,4 +92,6 @@ app.post("/api/steamUserData", cors(corsOptions), async (req, res) => {
 	);
 });
 
-app.listen(3001, () => console.log("Server listening at port 3001"));
+app.listen(SERVER_PORT, () =>
+	console.log(`Server listening at port ${SERVER_PORT}`)
+);
