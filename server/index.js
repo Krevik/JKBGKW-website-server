@@ -6,10 +6,11 @@ const cors = require("cors");
 const http = require("http");
 const fs = require("fs");
 const { URLSearchParams } = require("url");
-const database = require("./database");
+const appDatabase = require("./database");
+const databaseUtils = require("./databaseUtils");
 
 const app = express();
-const appDatabase = database.createDbConnection();
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(cors());
@@ -56,12 +57,18 @@ app.options("/api/serverInfo", cors(corsOptions), (req, res) => {
 
 app.get("/api/getBinds", cors(corsOptions), async (req, res) => {
 	setDefaultCorsHeaders(res);
-	res.send(database.getBinds(appDatabase));
+	databaseUtils.getBinds(appDatabase).then((dbResponse) => {
+		res.send(dbResponse);
+	});
 });
 
 app.post("/api/addBind", cors(corsOptions), async (req, res) => {
+	console.log("Trying to add following bind: ");
 	const bindToAdd = req.body;
-	res.send(database.addBind(appDatabase, bindToAdd));
+	console.log(bindToAdd);
+	databaseUtils.addBind(appDatabase, bindToAdd).then((dbAnswer) => {
+		res.send(dbAnswer);
+	});
 });
 
 app.post("/api/serverInfo", cors(corsOptions), async (req, res) => {
