@@ -10,7 +10,8 @@
 		"react": "^16.13.0",
 		"react-dom": "^16.13.0",
 		"react-scripts": "^5.0.1",
-		"request": "^2.88.2"
+		"request": "^2.88.2",
+		"sqlite3": "^5.1.4"
 	},
 	"scripts": {
 		"start": "react-scripts start",

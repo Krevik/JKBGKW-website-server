@@ -6,8 +6,10 @@ const cors = require("cors");
 const http = require("http");
 const fs = require("fs");
 const { URLSearchParams } = require("url");
+const database = require("./database");
 
 const app = express();
+const appDatabase = database.createDbConnection();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(cors());
@@ -50,6 +52,16 @@ app.get("/api/greeting", (req, res) => {
 
 app.options("/api/serverInfo", cors(corsOptions), (req, res) => {
 	setDefaultCorsHeaders(res);
+});
+
+app.get("/api/getBinds", cors(corsOptions), async (req, res) => {
+	setDefaultCorsHeaders(res);
+	res.send(database.getBinds(appDatabase));
+});
+
+app.post("/api/addBind", cors(corsOptions), async (req, res) => {
+	const bindToAdd = req.body;
+	res.send(database.addBind(appDatabase, bindToAdd));
 });
 
 app.post("/api/serverInfo", cors(corsOptions), async (req, res) => {
