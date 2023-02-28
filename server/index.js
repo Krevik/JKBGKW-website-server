@@ -111,6 +111,26 @@ app.post("/api/steamUserData", cors(corsOptions), async (req, res) => {
 	);
 });
 
+app.options("/api/steam/games", cors(corsOptions), (req, res) => {
+	res.setHeader("Content-Type", "application/json");
+	setDefaultCorsHeaders(res);
+});
+
+app.post("/api/steam/games", cors(corsOptions), async (req, res) => {
+	res.setHeader("Content-Type", "application/json");
+	setDefaultCorsHeaders(res);
+
+	const fetchURL = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=F9B6127DDEB6AF27EA0D64F1E5C642A4&steamid=${req.body.userID}&format=json&include_appinfo=true`;
+
+	fetchWrapHandleErrors(
+		fetchURL,
+		{
+			method: "get",
+		},
+		res
+	);
+});
+
 app.listen(SERVER_PORT, () =>
 	console.log(`Server listening at port ${SERVER_PORT}`)
 );
