@@ -1,5 +1,16 @@
 const BINDS_DATABASE_REF = "binds";
 
+const wrapDatabaseTaskRequest = (task, res) => {
+	task
+		.then((dbResponse) => {
+			res.send(dbResponse);
+		})
+		.catch((error) => {
+			console.log("Encountered error: " + error.message);
+			res.send({ error: "Couldn't do the task: " + error.message });
+		});
+};
+
 const addBind = async (db, bindToAdd) => {
 	return new Promise(function (resolve, reject) {
 		if (!bindToAdd) {
@@ -39,4 +50,9 @@ const getBinds = async (db) => {
 	});
 };
 
-module.exports = { BINDS_DATABASE_REF, addBind, getBinds };
+module.exports = {
+	BINDS_DATABASE_REF,
+	addBind,
+	getBinds,
+	wrapDatabaseTaskRequest,
+};

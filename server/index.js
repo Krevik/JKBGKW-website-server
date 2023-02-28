@@ -57,18 +57,18 @@ app.options("/api/serverInfo", cors(corsOptions), (req, res) => {
 
 app.get("/api/getBinds", cors(corsOptions), async (req, res) => {
 	setDefaultCorsHeaders(res);
-	databaseUtils.getBinds(appDatabase).then((dbResponse) => {
-		res.send(dbResponse);
-	});
+	databaseUtils.wrapDatabaseTaskRequest(
+		databaseUtils.getBinds(appDatabase),
+		res
+	);
 });
 
 app.post("/api/addBind", cors(corsOptions), async (req, res) => {
-	console.log("Trying to add following bind: ");
 	const bindToAdd = req.body;
-	console.log(bindToAdd);
-	databaseUtils.addBind(appDatabase, bindToAdd).then((dbAnswer) => {
-		res.send(dbAnswer);
-	});
+	databaseUtils.wrapDatabaseTaskRequest(
+		databaseUtils.addBind(appDatabase, bindToAdd),
+		res
+	);
 });
 
 app.post("/api/serverInfo", cors(corsOptions), async (req, res) => {
