@@ -88,8 +88,6 @@ app.get("/api/greeting", (req, res) => {
 	res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
-app.options("/api/serverInfo", (req, res) => {});
-
 app.get("/api/getBinds", async (req, res) => {
 	databaseUtils.wrapDatabaseTaskRequest(
 		databaseUtils.getBinds(appDatabase),
