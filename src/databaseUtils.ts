@@ -89,14 +89,19 @@ export const databaseUtils = {
 			}
 			findExistingBind(db, deleteBindData.id)
 				.then((rows) => {
-					db.exec(
-						`DELETE FROM ${databaseUtils.BINDS_DATABASE_REF()} WHERE id=${
-							deleteBindData.id
-						}`
-					);
-					resolve({
-						message: "Successfully deleted bind with id: " + deleteBindData.id,
-					});
+					if (rows) {
+						db.exec(
+							`DELETE FROM ${databaseUtils.BINDS_DATABASE_REF()} WHERE id=${
+								deleteBindData.id
+							}`
+						);
+						resolve({
+							message:
+								"Successfully deleted bind with id: " + deleteBindData.id,
+						});
+					} else {
+						reject({ message: "Didn't find that bind" });
+					}
 				})
 				.catch((error) => {
 					reject(error);
