@@ -16,7 +16,10 @@ export const databaseUtils = {
 				res.send({ error: "Couldn't do the task: " + error });
 			});
 	},
-	addBind: async (db: Database, bindToAdd: { author: any; text: any }) => {
+	addBind: async (
+		db: Database,
+		bindToAdd: { author: string; text: string }
+	) => {
 		return new Promise(function (resolve, reject) {
 			if (!bindToAdd) {
 				return reject("No bind was given");
@@ -35,7 +38,7 @@ export const databaseUtils = {
 						if (err) {
 							return reject(err);
 						}
-						resolve("Added");
+						resolve(rows);
 					}
 				);
 			} catch (error) {
@@ -91,9 +94,9 @@ export const databaseUtils = {
 							deleteBindData.id
 						}`
 					);
-					return resolve(
-						"Successfully deleted bind with id: " + deleteBindData.id
-					);
+					return resolve({
+						message: "Successfully deleted bind with id: " + deleteBindData.id,
+					});
 				})
 				.catch((error) => {
 					return reject(error);
@@ -120,8 +123,8 @@ const findExistingBind = async (db: Database, bindID: number) => {
 		db.all(
 			`SELECT * FROM ${databaseUtils.BINDS_DATABASE_REF()} WHERE id=${bindID}`,
 			function (error: Error | null, rows: []) {
-				if (rows.length > 0) {
-					return resolve(rows.length);
+				if (rows) {
+					return resolve(rows);
 				}
 				return reject("No bind was found!");
 			}

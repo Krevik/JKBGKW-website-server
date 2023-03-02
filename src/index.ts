@@ -8,7 +8,6 @@ import cors from "cors";
 import { databaseUtils } from "./databaseUtils";
 import { createDbConnection } from "./database";
 import { DeleteBindData, UpdateBindData } from "./utils/bindsModels";
-import { securityUtils } from "./utils/securityUtils";
 import axios from "axios";
 
 const app = express();
@@ -21,14 +20,13 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(securityUtils.demandKetherOrigin);
 
 const setDefaultCorsHeaders = (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
-	res.setHeader("Access-Control-Allow-Origin", "https://kether.pl");
+	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
 	next();
 };
@@ -95,7 +93,7 @@ app.get("/api/getBinds", async (req, res) => {
 	);
 });
 
-app.post("/api/addBind", async (req, res) => {
+app.post("/api/binds/addBind", async (req, res) => {
 	const bindToAdd = req.body;
 	databaseUtils.wrapDatabaseTaskRequest(
 		databaseUtils.addBind(appDatabase, bindToAdd),
