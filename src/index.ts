@@ -95,6 +95,7 @@ app.get("/api/getBinds", async (req, res) => {
 
 app.post("/api/binds/addBind", async (req, res) => {
 	const bindToAdd = req.body;
+	console.log(bindToAdd);
 	databaseUtils.wrapDatabaseTaskRequest(
 		databaseUtils.addBind(appDatabase, bindToAdd),
 		res
@@ -111,6 +112,7 @@ app.post("/api/binds/updateBind", async (req, res) => {
 
 app.post("/api/binds/deleteBind", async (req, res) => {
 	const deleteBindData: DeleteBindData = req.body;
+	console.log(deleteBindData);
 	databaseUtils.wrapDatabaseTaskRequest(
 		databaseUtils.deleteBind(appDatabase, deleteBindData),
 		res

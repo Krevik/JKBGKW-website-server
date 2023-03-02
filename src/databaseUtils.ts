@@ -13,7 +13,7 @@ export const databaseUtils = {
 			})
 			.catch((error) => {
 				console.log("Encountered error: " + error.message);
-				res.send({ error: "Couldn't do the task: " + error });
+				res.status(403).end();
 			});
 	},
 	addBind: async (
@@ -38,7 +38,7 @@ export const databaseUtils = {
 						if (err) {
 							return reject(err);
 						}
-						resolve(rows);
+						resolve({ rows });
 					}
 				);
 			} catch (error) {
