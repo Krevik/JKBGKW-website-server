@@ -89,7 +89,7 @@ export const databaseUtils = {
 			}
 			findExistingBind(db, deleteBindData.id)
 				.then((rows) => {
-					if (rows) {
+					if ((rows as []).length > 0) {
 						db.exec(
 							`DELETE FROM ${databaseUtils.BINDS_DATABASE_REF()} WHERE id=${
 								deleteBindData.id
@@ -112,11 +112,12 @@ export const databaseUtils = {
 		return new Promise(function (resolve, reject) {
 			db.all(
 				`SELECT * FROM ${databaseUtils.BINDS_DATABASE_REF()}`,
-				function (err: any, rows: unknown) {
+				function (err: any, rows: []) {
 					if (err) {
 						reject(err);
+					} else {
+						resolve(rows);
 					}
-					resolve(rows);
 				}
 			);
 		});
@@ -128,10 +129,11 @@ const findExistingBind = async (db: Database, bindID: number) => {
 		db.all(
 			`SELECT * FROM ${databaseUtils.BINDS_DATABASE_REF()} WHERE id=${bindID}`,
 			function (error: Error | null, rows: []) {
-				if (rows) {
+				if (error) {
+					reject(error);
+				} else {
 					resolve(rows);
 				}
-				reject("No bind was found!");
 			}
 		);
 	});
