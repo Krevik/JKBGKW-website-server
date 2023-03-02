@@ -56,7 +56,7 @@ export const databaseUtils = {
 			}
 			try {
 				findExistingBind(db, bindUpdateData.id)
-					.then(() => {
+					.then((existingBind) => {
 						bindUpdateData.author &&
 							db.exec(
 								`UPDATE ${databaseUtils.BINDS_DATABASE_REF()} SET author='${
@@ -69,7 +69,7 @@ export const databaseUtils = {
 									bindUpdateData.text
 								}' WHERE id=${bindUpdateData.id}`
 							);
-						resolve({ message: "Updated" });
+						resolve({ updatedBindID: bindUpdateData.id });
 					})
 					.catch((error) => {
 						reject(error);
