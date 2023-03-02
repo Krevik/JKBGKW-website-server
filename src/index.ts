@@ -95,7 +95,6 @@ app.get("/api/getBinds", async (req, res) => {
 
 app.post("/api/binds/addBind", async (req, res) => {
 	const bindToAdd = req.body;
-	console.log(bindToAdd);
 	databaseUtils.wrapDatabaseTaskRequest(
 		databaseUtils.addBind(appDatabase, bindToAdd),
 		res
