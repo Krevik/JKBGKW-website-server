@@ -22,13 +22,13 @@ export const databaseUtils = {
 	) => {
 		return new Promise(function (resolve, reject) {
 			if (!bindToAdd) {
-				return reject("No bind was given");
+				reject("No bind was given");
 			}
 			if (!bindToAdd.author) {
-				return reject("No author was given");
+				reject("No author was given");
 			}
 			if (!bindToAdd.text) {
-				return reject("No text was given");
+				reject("No text was given");
 			}
 			try {
 				db.run(
@@ -36,23 +36,23 @@ export const databaseUtils = {
 					[bindToAdd.author, bindToAdd.text],
 					function (err: any, rows: unknown) {
 						if (err) {
-							return reject(err);
+							reject(err);
 						}
 						resolve({ rows });
 					}
 				);
 			} catch (error) {
-				return reject(error);
+				reject(error);
 			}
 		});
 	},
 	updateBind: async (db: Database, bindUpdateData: UpdateBindData) => {
 		return new Promise(function (resolve, reject) {
 			if (!bindUpdateData.text && !bindUpdateData.author) {
-				return reject("No text nor author was given");
+				reject("No text nor author was given");
 			}
 			if (!bindUpdateData.id) {
-				return reject("No bind id was given");
+				reject("No bind id was given");
 			}
 			try {
 				findExistingBind(db, bindUpdateData.id)
@@ -69,23 +69,23 @@ export const databaseUtils = {
 									bindUpdateData.text
 								}' WHERE id=${bindUpdateData.id}`
 							);
-						return resolve("Updated");
+						resolve({ message: "Updated" });
 					})
 					.catch((error) => {
-						return reject(error);
+						reject(error);
 					});
 			} catch (error) {
-				return reject(error);
+				reject(error);
 			}
 		});
 	},
 	deleteBind: async (db: Database, deleteBindData: DeleteBindData) => {
 		return new Promise(function (resolve, reject) {
 			if (!deleteBindData) {
-				return reject("Couldn't delete bind, no deletion data was given");
+				reject("Couldn't delete bind, no deletion data was given");
 			}
 			if (!deleteBindData.id) {
-				return reject("No bind id was given");
+				reject("No bind id was given");
 			}
 			findExistingBind(db, deleteBindData.id)
 				.then((rows) => {
@@ -94,12 +94,12 @@ export const databaseUtils = {
 							deleteBindData.id
 						}`
 					);
-					return resolve({
+					resolve({
 						message: "Successfully deleted bind with id: " + deleteBindData.id,
 					});
 				})
 				.catch((error) => {
-					return reject(error);
+					reject(error);
 				});
 		});
 	},
@@ -109,7 +109,7 @@ export const databaseUtils = {
 				`SELECT * FROM ${databaseUtils.BINDS_DATABASE_REF()}`,
 				function (err: any, rows: unknown) {
 					if (err) {
-						return reject(err);
+						reject(err);
 					}
 					resolve(rows);
 				}
@@ -124,9 +124,9 @@ const findExistingBind = async (db: Database, bindID: number) => {
 			`SELECT * FROM ${databaseUtils.BINDS_DATABASE_REF()} WHERE id=${bindID}`,
 			function (error: Error | null, rows: []) {
 				if (rows) {
-					return resolve(rows);
+					resolve(rows);
 				}
-				return reject("No bind was found!");
+				reject("No bind was found!");
 			}
 		);
 	});

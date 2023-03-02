@@ -16,7 +16,6 @@ app.use(express.json() as RequestHandler);
 
 const corsOptions = {
 	origin: "https://kether.pl",
-	optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
 app.use(cors(corsOptions));
