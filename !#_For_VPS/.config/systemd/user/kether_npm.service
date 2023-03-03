@@ -1,0 +1,10 @@
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=yes
+RemainAfterExit=no
+ExecStart=/home/ubuntu/Kether.pl-website-server-ts/kether_npm.sh start
+ExecStop=/home/ubuntu/Kether.pl-website-server-ts/kether_npm.sh stop 
