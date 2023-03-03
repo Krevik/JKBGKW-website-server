@@ -15,9 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const databases_1 = require("./database/databases");
-const axios_1 = __importDefault(require("axios"));
 const bindsApi_1 = require("./api/binds/bindsApi");
 const bindSuggestionsApi_1 = require("./api/bindSuggestions/bindSuggestionsApi");
+const fetchingUtils_1 = require("./utils/fetchingUtils");
+const steamApi_1 = require("./api/binds/steamApi");
 const app = (0, express_1.default)();
 const databasesCollection = {
     bindsDatabase: (0, databases_1.getBindsDatabase)(),
@@ -49,32 +50,16 @@ app.get("/", (req, res) => {
     }
 });
 const SERVER_PORT = 3001;
-const fetchWrapHandleErrors = (request, options, res) => {
-    axios_1.default
-        .request({
-        url: request,
-        method: options.method,
-        data: options.body,
-        headers: options.headers,
-    })
-        .catch((error) => {
-        console.log(`Failed fetching: ${JSON.stringify(request)} with options ${JSON.stringify(options)}`);
-        console.log(`Error: ${JSON.stringify(error)}`);
-    })
-        .then((response) => {
-        const jsonedResponse = response.data;
-        res.send(jsonedResponse);
-    });
-};
 app.get("/api/greeting", (req, res) => {
     const name = req.query.name || "World";
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 const bindsApiRoutes = (0, bindsApi_1.bindsApi)(app, databasesCollection.bindsDatabase);
-const bindSuggestionsApiRouters = (0, bindSuggestionsApi_1.bindSuggestionsApi)(app, databasesCollection.bindSuggestionsDatabase);
+const bindSuggestionsApiRoutes = (0, bindSuggestionsApi_1.bindSuggestionsApi)(app, databasesCollection.bindSuggestionsDatabase);
+const steamApiRoutes = (0, steamApi_1.steamApi)(app);
 app.post("/api/serverInfo", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    fetchWrapHandleErrors("https://rec.liveserver.pl/api?channel=get_server_info&return_method=json", {
+    fetchingUtils_1.fetchingUtils.fetchWrapHandleErrors("https://rec.liveserver.pl/api?channel=get_server_info&return_method=json", {
         method: "post",
         headers: {
             "content-type": "application/x-www-form-urlencoded",
@@ -84,26 +69,6 @@ app.post("/api/serverInfo", (req, res) => __awaiter(void 0, void 0, void 0, func
             pin: "635577095f13a5c85545c4e6690d8878",
             server_id: "24044",
         }),
-    }, res);
-}));
-app.options("/api/steamUserData", (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-});
-app.post("/api/steamUserData", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.setHeader("Content-Type", "application/json");
-    const fetchURL = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F9B6127DDEB6AF27EA0D64F1E5C642A4&steamids=${req.body.userID}`;
-    fetchWrapHandleErrors(fetchURL, {
-        method: "get",
-    }, res);
-}));
-app.options("/api/steam/games", (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-});
-app.post("/api/steam/games", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.setHeader("Content-Type", "application/json");
-    const fetchURL = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=F9B6127DDEB6AF27EA0D64F1E5C642A4&steamid=${req.body.userID}&format=json&include_appinfo=true`;
-    fetchWrapHandleErrors(fetchURL, {
-        method: "get",
     }, res);
 }));
 app.listen(SERVER_PORT, () => console.log(`Server listening at port ${SERVER_PORT}`));
