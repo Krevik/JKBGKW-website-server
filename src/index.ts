@@ -93,15 +93,10 @@ app.get("/api/greeting", (req, res) => {
 	res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
-const bindsApiRoutes = bindsApi(
-	app,
-	bindsDatabaseUtils,
-	databasesCollection.bindsDatabase
-);
+const bindsApiRoutes = bindsApi(app, databasesCollection.bindsDatabase);
 
 const bindSuggestionsApiRouters = bindSuggestionsApi(
 	app,
-	bindSuggestionsDatabaseUtils,
 	databasesCollection.bindSuggestionsDatabase
 );
 

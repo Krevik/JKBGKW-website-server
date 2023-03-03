@@ -1,16 +1,21 @@
 import { Database } from "sqlite3";
 import { apiConstants } from "../apiConstants";
+import { bindSuggestionsDatabaseUtils } from "./bindSuggestionsDatabaseUtils";
+import { databaseUtils } from "../../utils/databaseUtils";
+import { Response } from "express";
+import {
+	BindData,
+	BindSuggestionData,
+	NewBindData,
+	NewBindSuggestionData,
+} from "../../utils/bindsModels";
 
-export const bindSuggestionsApi = (
-	app: any,
-	databaseUtils: any,
-	database: Database
-) => {
+export const bindSuggestionsApi = (app: any, database: Database) => {
 	GET: app.get(
 		`${apiConstants.API_BASE_PATH}${apiConstants.BINDS_SUGGESTIONS_PATH}/getBinds`,
 		async (req: Request, res: Response) => {
 			databaseUtils.wrapDatabaseTaskRequest(
-				databaseUtils.getBinds(database),
+				bindSuggestionsDatabaseUtils.getBindSuggestions(database),
 				res
 			);
 		}
@@ -19,20 +24,9 @@ export const bindSuggestionsApi = (
 	ADD: app.post(
 		`${apiConstants.API_BASE_PATH}${apiConstants.BINDS_SUGGESTIONS_PATH}/addBind`,
 		async (req: Request, res: Response) => {
-			const bindToAdd = req.body;
+			const bindToAdd = req.body as unknown as NewBindSuggestionData;
 			databaseUtils.wrapDatabaseTaskRequest(
-				databaseUtils.addBind(database, bindToAdd),
-				res
-			);
-		}
-	);
-
-	UPDATE: app.post(
-		`${apiConstants.API_BASE_PATH}${apiConstants.BINDS_SUGGESTIONS_PATH}/updateBind`,
-		async (req: Request, res: Response) => {
-			const updateData = req.body;
-			databaseUtils.wrapDatabaseTaskRequest(
-				databaseUtils.updateBind(database, updateData),
+				bindSuggestionsDatabaseUtils.addBindSuggestion(database, bindToAdd),
 				res
 			);
 		}
@@ -41,10 +35,13 @@ export const bindSuggestionsApi = (
 	DELETE: app.post(
 		`${apiConstants.API_BASE_PATH}${apiConstants.BINDS_SUGGESTIONS_PATH}/deleteBind`,
 		async (req: Request, res: Response) => {
-			const deleteBindData = req.body;
+			const deleteBindData = req.body as unknown as BindSuggestionData;
 			console.log(deleteBindData);
 			databaseUtils.wrapDatabaseTaskRequest(
-				databaseUtils.deleteBind(database, deleteBindData),
+				bindSuggestionsDatabaseUtils.deleteBindSuggestion(
+					database,
+					deleteBindData
+				),
 				res
 			);
 		}

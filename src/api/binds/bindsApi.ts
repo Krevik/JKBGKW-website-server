@@ -1,12 +1,17 @@
 import { Database } from "sqlite3";
 import { apiConstants } from "../apiConstants";
+import { databaseUtils } from "../../utils/databaseUtils";
+import { bindSuggestionsDatabaseUtils } from "../bindSuggestions/bindSuggestionsDatabaseUtils";
+import { Response } from "express";
+import { bindsDatabaseUtils } from "./bindsDatabaseUtils";
+import { BindData, NewBindData } from "../../utils/bindsModels";
 
-export const bindsApi = (app: any, databaseUtils: any, database: Database) => {
+export const bindsApi = (app: any, database: Database) => {
 	GET: app.get(
 		`${apiConstants.API_BASE_PATH}${apiConstants.BINDS_BASE_PATH}/getBinds`,
 		async (req: Request, res: Response) => {
 			databaseUtils.wrapDatabaseTaskRequest(
-				databaseUtils.getBinds(database),
+				bindsDatabaseUtils.getBinds(database),
 				res
 			);
 		}
@@ -15,9 +20,9 @@ export const bindsApi = (app: any, databaseUtils: any, database: Database) => {
 	ADD: app.post(
 		`${apiConstants.API_BASE_PATH}${apiConstants.BINDS_BASE_PATH}/addBind`,
 		async (req: Request, res: Response) => {
-			const bindToAdd = req.body;
+			const bindToAdd = req.body as unknown as NewBindData;
 			databaseUtils.wrapDatabaseTaskRequest(
-				databaseUtils.addBind(database, bindToAdd),
+				bindsDatabaseUtils.addBind(database, bindToAdd),
 				res
 			);
 		}
@@ -26,9 +31,9 @@ export const bindsApi = (app: any, databaseUtils: any, database: Database) => {
 	UPDATE: app.post(
 		`${apiConstants.API_BASE_PATH}${apiConstants.BINDS_BASE_PATH}/updateBind`,
 		async (req: Request, res: Response) => {
-			const updateData = req.body;
+			const updateData = req.body as unknown as BindData;
 			databaseUtils.wrapDatabaseTaskRequest(
-				databaseUtils.updateBind(database, updateData),
+				bindsDatabaseUtils.updateBind(database, updateData),
 				res
 			);
 		}
@@ -37,10 +42,10 @@ export const bindsApi = (app: any, databaseUtils: any, database: Database) => {
 	DELETE: app.post(
 		`${apiConstants.API_BASE_PATH}${apiConstants.BINDS_BASE_PATH}/deleteBind`,
 		async (req: Request, res: Response) => {
-			const deleteBindData = req.body;
+			const deleteBindData = req.body as unknown as BindData;
 			console.log(deleteBindData);
 			databaseUtils.wrapDatabaseTaskRequest(
-				databaseUtils.deleteBind(database, deleteBindData),
+				bindsDatabaseUtils.deleteBind(database, deleteBindData),
 				res
 			);
 		}

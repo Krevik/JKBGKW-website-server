@@ -3,9 +3,9 @@ import { BindData } from "../../utils/bindsModels";
 
 export const bindSuggestionsDatabaseUtils = {
 	BIND_SUGGESTIONS_DATABASE_REF: "bindSuggestions",
-	addBind: async (
+	addBindSuggestion: async (
 		db: Database,
-		bindToAdd: { author: string; text: string }
+		bindToAdd: { author: string; text: string; proposedBy: string }
 	) => {
 		return new Promise(function (resolve, reject) {
 			if (!bindToAdd) {
@@ -19,8 +19,8 @@ export const bindSuggestionsDatabaseUtils = {
 			}
 			try {
 				db.run(
-					`INSERT INTO ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text) VALUES (?, ?)`,
-					[bindToAdd.author, bindToAdd.text],
+					`INSERT INTO ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text, proposed_by) VALUES (?, ?, ?)`,
+					[bindToAdd.author, bindToAdd.text, bindToAdd.proposedBy],
 					function (err: any, rows: unknown) {
 						if (err) {
 							reject(err);
@@ -33,36 +33,7 @@ export const bindSuggestionsDatabaseUtils = {
 			}
 		});
 	},
-	updateBind: async (db: Database, bindUpdateData: BindData) => {
-		return new Promise(function (resolve, reject) {
-			if (!bindUpdateData.text && !bindUpdateData.author) {
-				reject("No text nor author was given");
-			}
-			if (!bindUpdateData.id) {
-				reject("No bind id was given");
-			}
-			try {
-				findExistingBind(db, bindUpdateData.id)
-					.then((existingBind) => {
-						bindUpdateData.author &&
-							db.exec(
-								`UPDATE ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} SET author='${bindUpdateData.author}' WHERE id=${bindUpdateData.id}`
-							);
-						bindUpdateData.text &&
-							db.exec(
-								`UPDATE ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} SET text='${bindUpdateData.text}' WHERE id=${bindUpdateData.id}`
-							);
-						resolve({ updatedBindID: bindUpdateData.id });
-					})
-					.catch((error) => {
-						reject(error);
-					});
-			} catch (error) {
-				reject(error);
-			}
-		});
-	},
-	deleteBind: async (db: Database, deleteBindData: BindData) => {
+	deleteBindSuggestion: async (db: Database, deleteBindData: BindData) => {
 		return new Promise(function (resolve, reject) {
 			if (!deleteBindData) {
 				reject("Couldn't delete bind, no deletion data was given");
@@ -89,7 +60,7 @@ export const bindSuggestionsDatabaseUtils = {
 				});
 		});
 	},
-	getBinds: async (db: Database) => {
+	getBindSuggestions: async (db: Database) => {
 		return new Promise(function (resolve, reject) {
 			db.all(
 				`SELECT * FROM ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF}`,

@@ -3,3 +3,11 @@ export type BindData = {
 	author?: string;
 	text?: string;
 };
+
+export type NewBindData = {
+	author: string;
+	text: string;
+};
+
+export type BindSuggestionData = BindData & { proposedBy: string };
+export type NewBindSuggestionData = NewBindData & { proposedBy: string };

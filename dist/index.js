@@ -14,12 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const bindsDatabaseUtils_1 = require("./api/binds/bindsDatabaseUtils");
 const databases_1 = require("./database/databases");
 const axios_1 = __importDefault(require("axios"));
 const bindsApi_1 = require("./api/binds/bindsApi");
 const bindSuggestionsApi_1 = require("./api/bindSuggestions/bindSuggestionsApi");
-const bindSuggestionsDatabaseUtils_1 = require("./api/bindSuggestions/bindSuggestionsDatabaseUtils");
 const app = (0, express_1.default)();
 const databasesCollection = {
     bindsDatabase: (0, databases_1.getBindsDatabase)(),
@@ -73,8 +71,8 @@ app.get("/api/greeting", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
-const bindsApiRoutes = (0, bindsApi_1.bindsApi)(app, bindsDatabaseUtils_1.bindsDatabaseUtils, databasesCollection.bindsDatabase);
-const bindSuggestionsApiRouters = (0, bindSuggestionsApi_1.bindSuggestionsApi)(app, bindSuggestionsDatabaseUtils_1.bindSuggestionsDatabaseUtils, databasesCollection.bindSuggestionsDatabase);
+const bindsApiRoutes = (0, bindsApi_1.bindsApi)(app, databasesCollection.bindsDatabase);
+const bindSuggestionsApiRouters = (0, bindSuggestionsApi_1.bindSuggestionsApi)(app, databasesCollection.bindSuggestionsDatabase);
 app.post("/api/serverInfo", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     fetchWrapHandleErrors("https://rec.liveserver.pl/api?channel=get_server_info&return_method=json", {
         method: "post",

@@ -11,22 +11,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bindsApi = void 0;
 const apiConstants_1 = require("../apiConstants");
-const bindsApi = (app, databaseUtils, database) => {
+const databaseUtils_1 = require("../../utils/databaseUtils");
+const bindsDatabaseUtils_1 = require("./bindsDatabaseUtils");
+const bindsApi = (app, database) => {
     GET: app.get(`${apiConstants_1.apiConstants.API_BASE_PATH}${apiConstants_1.apiConstants.BINDS_BASE_PATH}/getBinds`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        databaseUtils.wrapDatabaseTaskRequest(databaseUtils.getBinds(database), res);
+        databaseUtils_1.databaseUtils.wrapDatabaseTaskRequest(bindsDatabaseUtils_1.bindsDatabaseUtils.getBinds(database), res);
     }));
     ADD: app.post(`${apiConstants_1.apiConstants.API_BASE_PATH}${apiConstants_1.apiConstants.BINDS_BASE_PATH}/addBind`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const bindToAdd = req.body;
-        databaseUtils.wrapDatabaseTaskRequest(databaseUtils.addBind(database, bindToAdd), res);
+        databaseUtils_1.databaseUtils.wrapDatabaseTaskRequest(bindsDatabaseUtils_1.bindsDatabaseUtils.addBind(database, bindToAdd), res);
     }));
     UPDATE: app.post(`${apiConstants_1.apiConstants.API_BASE_PATH}${apiConstants_1.apiConstants.BINDS_BASE_PATH}/updateBind`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const updateData = req.body;
-        databaseUtils.wrapDatabaseTaskRequest(databaseUtils.updateBind(database, updateData), res);
+        databaseUtils_1.databaseUtils.wrapDatabaseTaskRequest(bindsDatabaseUtils_1.bindsDatabaseUtils.updateBind(database, updateData), res);
     }));
     DELETE: app.post(`${apiConstants_1.apiConstants.API_BASE_PATH}${apiConstants_1.apiConstants.BINDS_BASE_PATH}/deleteBind`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const deleteBindData = req.body;
         console.log(deleteBindData);
-        databaseUtils.wrapDatabaseTaskRequest(databaseUtils.deleteBind(database, deleteBindData), res);
+        databaseUtils_1.databaseUtils.wrapDatabaseTaskRequest(bindsDatabaseUtils_1.bindsDatabaseUtils.deleteBind(database, deleteBindData), res);
     }));
 };
 exports.bindsApi = bindsApi;

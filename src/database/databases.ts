@@ -33,7 +33,8 @@ function verifyBindsTableExistance(db: Database) {
 CREATE TABLE IF NOT EXISTS ${bindsDatabaseUtils.BINDS_DATABASE_REF} ( 
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  author VARCHAR (255) NOT NULL,
- text VARCHAR (255) NOT NULL
+ text VARCHAR (255) NOT NULL,
+ unique(text)
 )
 	`);
 }
@@ -43,7 +44,9 @@ function verifyBindSuggestionsTableExistance(db: Database) {
 CREATE TABLE IF NOT EXISTS ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} ( 
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  author VARCHAR (255) NOT NULL,
- text VARCHAR (255) NOT NULL
+ text VARCHAR (255) NOT NULL,
+ proposed_by VARCHAR (255) NOT NULL,
+ unique(text)
 )
 	`);
 }

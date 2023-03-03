@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bindSuggestionsDatabaseUtils = void 0;
 exports.bindSuggestionsDatabaseUtils = {
     BIND_SUGGESTIONS_DATABASE_REF: "bindSuggestions",
-    addBind: (db, bindToAdd) => __awaiter(void 0, void 0, void 0, function* () {
+    addBindSuggestion: (db, bindToAdd) => __awaiter(void 0, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
             if (!bindToAdd) {
                 reject("No bind was given");
@@ -24,7 +24,7 @@ exports.bindSuggestionsDatabaseUtils = {
                 reject("No text was given");
             }
             try {
-                db.run(`INSERT INTO ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text) VALUES (?, ?)`, [bindToAdd.author, bindToAdd.text], function (err, rows) {
+                db.run(`INSERT INTO ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text, proposed_by) VALUES (?, ?, ?)`, [bindToAdd.author, bindToAdd.text, bindToAdd.proposedBy], function (err, rows) {
                     if (err) {
                         reject(err);
                     }
@@ -36,33 +36,7 @@ exports.bindSuggestionsDatabaseUtils = {
             }
         });
     }),
-    updateBind: (db, bindUpdateData) => __awaiter(void 0, void 0, void 0, function* () {
-        return new Promise(function (resolve, reject) {
-            if (!bindUpdateData.text && !bindUpdateData.author) {
-                reject("No text nor author was given");
-            }
-            if (!bindUpdateData.id) {
-                reject("No bind id was given");
-            }
-            try {
-                findExistingBind(db, bindUpdateData.id)
-                    .then((existingBind) => {
-                    bindUpdateData.author &&
-                        db.exec(`UPDATE ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} SET author='${bindUpdateData.author}' WHERE id=${bindUpdateData.id}`);
-                    bindUpdateData.text &&
-                        db.exec(`UPDATE ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} SET text='${bindUpdateData.text}' WHERE id=${bindUpdateData.id}`);
-                    resolve({ updatedBindID: bindUpdateData.id });
-                })
-                    .catch((error) => {
-                    reject(error);
-                });
-            }
-            catch (error) {
-                reject(error);
-            }
-        });
-    }),
-    deleteBind: (db, deleteBindData) => __awaiter(void 0, void 0, void 0, function* () {
+    deleteBindSuggestion: (db, deleteBindData) => __awaiter(void 0, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
             if (!deleteBindData) {
                 reject("Couldn't delete bind, no deletion data was given");
@@ -87,7 +61,7 @@ exports.bindSuggestionsDatabaseUtils = {
             });
         });
     }),
-    getBinds: (db) => __awaiter(void 0, void 0, void 0, function* () {
+    getBindSuggestions: (db) => __awaiter(void 0, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
             db.all(`SELECT * FROM ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF}`, function (err, rows) {
                 if (err) {
