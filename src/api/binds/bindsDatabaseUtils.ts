@@ -1,11 +1,9 @@
 import { Database } from "sqlite3";
 import { Response } from "express";
-import { DeleteBindData, UpdateBindData } from "./utils/bindsModels";
+import { BindData } from "../../utils/bindsModels";
 
-export const databaseUtils = {
-	BINDS_DATABASE_REF() {
-		return `binds`;
-	},
+export const bindsDatabaseUtils = {
+	BINDS_DATABASE_REF: "binds",
 	wrapDatabaseTaskRequest: (task: Promise<any>, res: Response) => {
 		task
 			.then((dbResponse) => {
@@ -32,7 +30,7 @@ export const databaseUtils = {
 			}
 			try {
 				db.run(
-					`INSERT INTO ${databaseUtils.BINDS_DATABASE_REF()} (author, text) VALUES (?, ?)`,
+					`INSERT INTO ${bindsDatabaseUtils.BINDS_DATABASE_REF} (author, text) VALUES (?, ?)`,
 					[bindToAdd.author, bindToAdd.text],
 					function (err: any, rows: unknown) {
 						if (err) {
@@ -46,7 +44,7 @@ export const databaseUtils = {
 			}
 		});
 	},
-	updateBind: async (db: Database, bindUpdateData: UpdateBindData) => {
+	updateBind: async (db: Database, bindUpdateData: BindData) => {
 		return new Promise(function (resolve, reject) {
 			if (!bindUpdateData.text && !bindUpdateData.author) {
 				reject("No text nor author was given");
@@ -59,15 +57,11 @@ export const databaseUtils = {
 					.then((existingBind) => {
 						bindUpdateData.author &&
 							db.exec(
-								`UPDATE ${databaseUtils.BINDS_DATABASE_REF()} SET author='${
-									bindUpdateData.author
-								}' WHERE id=${bindUpdateData.id}`
+								`UPDATE ${bindsDatabaseUtils.BINDS_DATABASE_REF} SET author='${bindUpdateData.author}' WHERE id=${bindUpdateData.id}`
 							);
 						bindUpdateData.text &&
 							db.exec(
-								`UPDATE ${databaseUtils.BINDS_DATABASE_REF()} SET text='${
-									bindUpdateData.text
-								}' WHERE id=${bindUpdateData.id}`
+								`UPDATE ${bindsDatabaseUtils.BINDS_DATABASE_REF} SET text='${bindUpdateData.text}' WHERE id=${bindUpdateData.id}`
 							);
 						resolve({ updatedBindID: bindUpdateData.id });
 					})
@@ -79,7 +73,7 @@ export const databaseUtils = {
 			}
 		});
 	},
-	deleteBind: async (db: Database, deleteBindData: DeleteBindData) => {
+	deleteBind: async (db: Database, deleteBindData: BindData) => {
 		return new Promise(function (resolve, reject) {
 			if (!deleteBindData) {
 				reject("Couldn't delete bind, no deletion data was given");
@@ -91,9 +85,7 @@ export const databaseUtils = {
 				.then((rows) => {
 					if ((rows as []).length > 0) {
 						db.exec(
-							`DELETE FROM ${databaseUtils.BINDS_DATABASE_REF()} WHERE id=${
-								deleteBindData.id
-							}`
+							`DELETE FROM ${bindsDatabaseUtils.BINDS_DATABASE_REF} WHERE id=${deleteBindData.id}`
 						);
 						resolve({
 							message:
@@ -111,7 +103,7 @@ export const databaseUtils = {
 	getBinds: async (db: Database) => {
 		return new Promise(function (resolve, reject) {
 			db.all(
-				`SELECT * FROM ${databaseUtils.BINDS_DATABASE_REF()}`,
+				`SELECT * FROM ${bindsDatabaseUtils.BINDS_DATABASE_REF}`,
 				function (err: any, rows: []) {
 					if (err) {
 						reject(err);
@@ -127,7 +119,7 @@ export const databaseUtils = {
 const findExistingBind = async (db: Database, bindID: number) => {
 	return new Promise(function (resolve, reject) {
 		db.all(
-			`SELECT * FROM ${databaseUtils.BINDS_DATABASE_REF()} WHERE id=${bindID}`,
+			`SELECT * FROM ${bindsDatabaseUtils.BINDS_DATABASE_REF} WHERE id=${bindID}`,
 			function (error: Error | null, rows: []) {
 				if (error) {
 					reject(error);

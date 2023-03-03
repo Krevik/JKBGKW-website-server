@@ -5,12 +5,22 @@ import express, {
 	Response,
 } from "express";
 import cors from "cors";
-import { databaseUtils } from "./databaseUtils";
-import { createDbConnection } from "./database";
-import { DeleteBindData, UpdateBindData } from "./utils/bindsModels";
+import { bindsDatabaseUtils } from "./api/binds/bindsDatabaseUtils";
+import {
+	getBindSuggestionsDatabase,
+	getBindsDatabase,
+} from "./database/databases";
 import axios from "axios";
+import { bindsApi } from "./api/binds/bindsApi";
+import { bindSuggestionsApi } from "./api/bindSuggestions/bindSuggestionsApi";
+import { bindSuggestionsDatabaseUtils } from "./api/bindSuggestions/bindSuggestionsDatabaseUtils";
 
 const app = express();
+const databasesCollection = {
+	bindsDatabase: getBindsDatabase(),
+	bindSuggestionsDatabase: getBindSuggestionsDatabase(),
+};
+
 app.use(express.urlencoded({ extended: true }) as RequestHandler);
 app.use(express.json() as RequestHandler);
 
@@ -36,8 +46,6 @@ const logRequest = (req: Request, res: Response, next: NextFunction) => {
 	next();
 };
 app.use(logRequest);
-
-const appDatabase = createDbConnection();
 
 app.get("/", (req: Request, res: Response): void => {
 	try {
@@ -85,37 +93,17 @@ app.get("/api/greeting", (req, res) => {
 	res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
-app.get("/api/getBinds", async (req, res) => {
-	databaseUtils.wrapDatabaseTaskRequest(
-		databaseUtils.getBinds(appDatabase),
-		res
-	);
-});
+const bindsApiRoutes = bindsApi(
+	app,
+	bindsDatabaseUtils,
+	databasesCollection.bindsDatabase
+);
 
-app.post("/api/binds/addBind", async (req, res) => {
-	const bindToAdd = req.body;
-	databaseUtils.wrapDatabaseTaskRequest(
-		databaseUtils.addBind(appDatabase, bindToAdd),
-		res
-	);
-});
-
-app.post("/api/binds/updateBind", async (req, res) => {
-	const updateData: UpdateBindData = req.body;
-	databaseUtils.wrapDatabaseTaskRequest(
-		databaseUtils.updateBind(appDatabase, updateData),
-		res
-	);
-});
-
-app.post("/api/binds/deleteBind", async (req, res) => {
-	const deleteBindData: DeleteBindData = req.body;
-	console.log(deleteBindData);
-	databaseUtils.wrapDatabaseTaskRequest(
-		databaseUtils.deleteBind(appDatabase, deleteBindData),
-		res
-	);
-});
+const bindSuggestionsApiRouters = bindSuggestionsApi(
+	app,
+	bindSuggestionsDatabaseUtils,
+	databasesCollection.bindSuggestionsDatabase
+);
 
 app.post("/api/serverInfo", async (req, res) => {
 	fetchWrapHandleErrors(

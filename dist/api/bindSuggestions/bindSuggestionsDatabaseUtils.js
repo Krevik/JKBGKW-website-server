@@ -9,21 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.databaseUtils = void 0;
-exports.databaseUtils = {
-    BINDS_DATABASE_REF() {
-        return `binds`;
-    },
-    wrapDatabaseTaskRequest: (task, res) => {
-        task
-            .then((dbResponse) => {
-            res.send(dbResponse);
-        })
-            .catch((error) => {
-            console.log("Encountered error: " + error.message);
-            res.status(403).end();
-        });
-    },
+exports.bindSuggestionsDatabaseUtils = void 0;
+exports.bindSuggestionsDatabaseUtils = {
+    BIND_SUGGESTIONS_DATABASE_REF: "bindSuggestions",
     addBind: (db, bindToAdd) => __awaiter(void 0, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
             if (!bindToAdd) {
@@ -36,7 +24,7 @@ exports.databaseUtils = {
                 reject("No text was given");
             }
             try {
-                db.run(`INSERT INTO ${exports.databaseUtils.BINDS_DATABASE_REF()} (author, text) VALUES (?, ?)`, [bindToAdd.author, bindToAdd.text], function (err, rows) {
+                db.run(`INSERT INTO ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text) VALUES (?, ?)`, [bindToAdd.author, bindToAdd.text], function (err, rows) {
                     if (err) {
                         reject(err);
                     }
@@ -60,9 +48,9 @@ exports.databaseUtils = {
                 findExistingBind(db, bindUpdateData.id)
                     .then((existingBind) => {
                     bindUpdateData.author &&
-                        db.exec(`UPDATE ${exports.databaseUtils.BINDS_DATABASE_REF()} SET author='${bindUpdateData.author}' WHERE id=${bindUpdateData.id}`);
+                        db.exec(`UPDATE ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} SET author='${bindUpdateData.author}' WHERE id=${bindUpdateData.id}`);
                     bindUpdateData.text &&
-                        db.exec(`UPDATE ${exports.databaseUtils.BINDS_DATABASE_REF()} SET text='${bindUpdateData.text}' WHERE id=${bindUpdateData.id}`);
+                        db.exec(`UPDATE ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} SET text='${bindUpdateData.text}' WHERE id=${bindUpdateData.id}`);
                     resolve({ updatedBindID: bindUpdateData.id });
                 })
                     .catch((error) => {
@@ -85,7 +73,7 @@ exports.databaseUtils = {
             findExistingBind(db, deleteBindData.id)
                 .then((rows) => {
                 if (rows.length > 0) {
-                    db.exec(`DELETE FROM ${exports.databaseUtils.BINDS_DATABASE_REF()} WHERE id=${deleteBindData.id}`);
+                    db.exec(`DELETE FROM ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} WHERE id=${deleteBindData.id}`);
                     resolve({
                         message: "Successfully deleted bind with id: " + deleteBindData.id,
                     });
@@ -101,7 +89,7 @@ exports.databaseUtils = {
     }),
     getBinds: (db) => __awaiter(void 0, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
-            db.all(`SELECT * FROM ${exports.databaseUtils.BINDS_DATABASE_REF()}`, function (err, rows) {
+            db.all(`SELECT * FROM ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF}`, function (err, rows) {
                 if (err) {
                     reject(err);
                 }
@@ -114,7 +102,7 @@ exports.databaseUtils = {
 };
 const findExistingBind = (db, bindID) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise(function (resolve, reject) {
-        db.all(`SELECT * FROM ${exports.databaseUtils.BINDS_DATABASE_REF()} WHERE id=${bindID}`, function (error, rows) {
+        db.all(`SELECT * FROM ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} WHERE id=${bindID}`, function (error, rows) {
             if (error) {
                 reject(error);
             }

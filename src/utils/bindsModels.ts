@@ -1,9 +1,5 @@
-export type UpdateBindData = {
+export type BindData = {
 	id: number;
 	author?: string;
 	text?: string;
-};
-
-export type DeleteBindData = {
-	id: number;
 };

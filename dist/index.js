@@ -14,19 +14,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const databaseUtils_1 = require("./databaseUtils");
-const database_1 = require("./database");
-const securityUtils_1 = require("./utils/securityUtils");
+const bindsDatabaseUtils_1 = require("./api/binds/bindsDatabaseUtils");
+const databases_1 = require("./database/databases");
 const axios_1 = __importDefault(require("axios"));
+const bindsApi_1 = require("./api/binds/bindsApi");
+const bindSuggestionsApi_1 = require("./api/bindSuggestions/bindSuggestionsApi");
+const bindSuggestionsDatabaseUtils_1 = require("./api/bindSuggestions/bindSuggestionsDatabaseUtils");
 const app = (0, express_1.default)();
+const databasesCollection = {
+    bindsDatabase: (0, databases_1.getBindsDatabase)(),
+    bindSuggestionsDatabase: (0, databases_1.getBindSuggestionsDatabase)(),
+};
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 const corsOptions = {
     origin: "https://kether.pl",
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 app.use((0, cors_1.default)(corsOptions));
-app.use(securityUtils_1.securityUtils.demandKetherOrigin);
 const setDefaultCorsHeaders = (req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "https://kether.pl");
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
@@ -38,7 +42,6 @@ const logRequest = (req, res, next) => {
     next();
 };
 app.use(logRequest);
-const appDatabase = (0, database_1.createDbConnection)();
 app.get("/", (req, res) => {
     try {
         res.send("Hello World");
@@ -70,22 +73,8 @@ app.get("/api/greeting", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
-app.options("/api/serverInfo", (req, res) => { });
-app.get("/api/getBinds", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    databaseUtils_1.databaseUtils.wrapDatabaseTaskRequest(databaseUtils_1.databaseUtils.getBinds(appDatabase), res);
-}));
-app.post("/api/addBind", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const bindToAdd = req.body;
-    databaseUtils_1.databaseUtils.wrapDatabaseTaskRequest(databaseUtils_1.databaseUtils.addBind(appDatabase, bindToAdd), res);
-}));
-app.post("/api/binds/updateBind", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const updateData = req.body;
-    databaseUtils_1.databaseUtils.wrapDatabaseTaskRequest(databaseUtils_1.databaseUtils.updateBind(appDatabase, updateData), res);
-}));
-app.post("/api/binds/deleteBind", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const deleteBindData = req.body;
-    databaseUtils_1.databaseUtils.wrapDatabaseTaskRequest(databaseUtils_1.databaseUtils.deleteBind(appDatabase, deleteBindData), res);
-}));
+const bindsApiRoutes = (0, bindsApi_1.bindsApi)(app, bindsDatabaseUtils_1.bindsDatabaseUtils, databasesCollection.bindsDatabase);
+const bindSuggestionsApiRouters = (0, bindSuggestionsApi_1.bindSuggestionsApi)(app, bindSuggestionsDatabaseUtils_1.bindSuggestionsDatabaseUtils, databasesCollection.bindSuggestionsDatabase);
 app.post("/api/serverInfo", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     fetchWrapHandleErrors("https://rec.liveserver.pl/api?channel=get_server_info&return_method=json", {
         method: "post",
