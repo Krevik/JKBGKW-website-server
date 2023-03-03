@@ -4,9 +4,7 @@ import { bindSuggestionsDatabaseUtils } from "./bindSuggestionsDatabaseUtils";
 import { databaseUtils } from "../../utils/databaseUtils";
 import { Response } from "express";
 import {
-	BindData,
 	BindSuggestionData,
-	NewBindData,
 	NewBindSuggestionData,
 } from "../../utils/bindsModels";
 

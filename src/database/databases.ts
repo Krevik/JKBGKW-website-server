@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATAB
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  author VARCHAR (255) NOT NULL,
  text VARCHAR (255) NOT NULL,
- proposed_by VARCHAR (255) NOT NULL,
+ proposedBy VARCHAR (255) NOT NULL,
  unique(text)
 )
 	`);

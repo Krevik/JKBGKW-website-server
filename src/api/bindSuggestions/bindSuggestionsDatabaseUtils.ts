@@ -1,5 +1,6 @@
 import { Database } from "sqlite3";
 import { BindData } from "../../utils/bindsModels";
+import { ok } from "assert";
 
 export const bindSuggestionsDatabaseUtils = {
 	BIND_SUGGESTIONS_DATABASE_REF: "bindSuggestions",
@@ -19,7 +20,7 @@ export const bindSuggestionsDatabaseUtils = {
 			}
 			try {
 				db.run(
-					`INSERT INTO ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text, proposed_by) VALUES (?, ?, ?)`,
+					`INSERT INTO ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text, proposedBy) VALUES (?, ?, ?)`,
 					[bindToAdd.author, bindToAdd.text, bindToAdd.proposedBy],
 					function (err: any, rows: unknown) {
 						if (err) {
@@ -42,8 +43,8 @@ export const bindSuggestionsDatabaseUtils = {
 				reject("No bind id was given");
 			}
 			findExistingBind(db, deleteBindData.id)
-				.then((rows) => {
-					if ((rows as []).length > 0) {
+				.then((result) => {
+					if ((result as []).length > 0) {
 						db.exec(
 							`DELETE FROM ${bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} WHERE id=${deleteBindData.id}`
 						);

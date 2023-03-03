@@ -19,7 +19,7 @@ exports.bindsDatabaseUtils = {
         })
             .catch((error) => {
             console.log("Encountered error: " + error.message);
-            res.status(403).end();
+            res.status(403).send(error).end();
         });
     },
     addBind: (db, bindToAdd) => __awaiter(void 0, void 0, void 0, function* () {

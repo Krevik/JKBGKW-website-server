@@ -24,7 +24,7 @@ exports.bindSuggestionsDatabaseUtils = {
                 reject("No text was given");
             }
             try {
-                db.run(`INSERT INTO ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text, proposed_by) VALUES (?, ?, ?)`, [bindToAdd.author, bindToAdd.text, bindToAdd.proposedBy], function (err, rows) {
+                db.run(`INSERT INTO ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} (author, text, proposedBy) VALUES (?, ?, ?)`, [bindToAdd.author, bindToAdd.text, bindToAdd.proposedBy], function (err, rows) {
                     if (err) {
                         reject(err);
                     }
@@ -45,8 +45,8 @@ exports.bindSuggestionsDatabaseUtils = {
                 reject("No bind id was given");
             }
             findExistingBind(db, deleteBindData.id)
-                .then((rows) => {
-                if (rows.length > 0) {
+                .then((result) => {
+                if (result.length > 0) {
                     db.exec(`DELETE FROM ${exports.bindSuggestionsDatabaseUtils.BIND_SUGGESTIONS_DATABASE_REF} WHERE id=${deleteBindData.id}`);
                     resolve({
                         message: "Successfully deleted bind with id: " + deleteBindData.id,
